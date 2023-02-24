@@ -72,3 +72,17 @@ services:
         published: ${MAILHOG_PUBLISHED_PORT:-8025}
         protocol: tcp
         mode: host
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOSTS=db
+      - PMA_USER=phper
+      - PMA_PASSWORD=secret
+    ports:
+      - "3000:80"
+    volumes:
+      - ./docker/phpmyadmin/sessions:/sessions
