@@ -1,7 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import Button from '/Users/mizuki/React_Laravel_ToDoApp/src/resources/js/components/elements/Button.jsx';
-// import { Button } from 'bootstrap';
 
 function Example() {
     const now = new Date();
@@ -23,12 +20,9 @@ function Example() {
                         </div>
 
                         <div className="card-body">
-                            {/* <Button>テストボタン</Button> */}
-
                             <button>削除</button>
                             <button>追加</button>
-                            {/* <Button>ボ</Button> */}
-                            <button type="button" className="btn btn-primary">Primary</button>
+                            <button type="button" className="btn btn-primary">Homeに遷移ボタン</button>
                             
                         </div>
 
@@ -41,12 +35,12 @@ function Example() {
 
 export default Example;
 
-if (document.getElementById('app')) {
-    const Index = ReactDOM.createRoot(document.getElementById("app"));
+// if (document.getElementById('app')) {
+//     const Index = ReactDOM.createRoot(document.getElementById("app"));
 
-    Index.render(
-        <React.StrictMode>
-            <Example/>
-        </React.StrictMode>
-    )
-}
+//     Index.render(
+//         <React.StrictMode>
+//             <Example/>
+//         </React.StrictMode>
+//     )
+// }
