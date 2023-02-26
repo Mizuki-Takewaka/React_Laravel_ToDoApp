@@ -20,6 +20,7 @@ function Example() {
                         </div>
 
                         <div className="card-body">
+                            
                             <button>削除</button>
                             <button>追加</button>
                             <a href="/"><button type="button" className="btn btn-primary">Homeに遷移ボタン</button></a>
