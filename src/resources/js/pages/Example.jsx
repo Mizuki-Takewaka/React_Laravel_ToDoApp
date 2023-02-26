@@ -22,7 +22,7 @@ function Example() {
                         <div className="card-body">
                             <button>削除</button>
                             <button>追加</button>
-                            <button type="button" className="btn btn-primary">Homeに遷移ボタン</button>
+                            <a href="/"><button type="button" className="btn btn-primary">Homeに遷移ボタン</button></a>
                             
                         </div>
 
