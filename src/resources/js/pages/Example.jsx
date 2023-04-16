@@ -17,19 +17,37 @@ function Example() {
                         <div className="card-header">
                             <p>タスク管理</p>
                             <p>{dateAndTime}</p>
+                            <a href="/"><button type="button" className="btn btn-primary">Homeに遷移ボタン</button></a>
                         </div>
 
                         <div className="card-body">
-                            
-                            <button>削除</button>
-                            <button>追加</button>
-                            <a href="/"><button type="button" className="btn btn-primary">Homeに遷移ボタン</button></a>
+
+                            <form action="">
+                                <div class="d-flex bd-highlight">
+                                    <div class="p-2 flex-grow-1 bd-highlight">
+                                        <input type="text" class="form-control"/>
+                                    </div>
+                                    <div class="p-2  bd-highlight">
+                                        <button type="button submit" className="btn btn-outline-primary">追加</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <ul>
+                                {/* { todos.map((todo, index) => (
+                                    <li key={ index }>{ todo.task }</li>
+                                ))} */}
+                            </ul>
+                            <button type="button" className="btn btn-outline-danger">削除</button>
                             
                         </div>
 
                     </div>
                 </div>
             </div>
+
+
+            
         </div>
     );
 }
