@@ -29,7 +29,7 @@ function Example() {
     return (
         <div className="container">
             <div className="row justify-content-center">
-                <div className="col-md-8">
+                <div className="col-md-10">
                     <div className="card">
                         <div className="card-header">
                             <p>タスク管理</p>
@@ -39,33 +39,30 @@ function Example() {
 
                         <div className="card-body">
                             <form action="" onSubmit={handleSubmit}>
-                                <div class="d-flex bd-highlight">
-                                    <div class="p-2 flex-grow-1 bd-highlight">
-                                        <input type="text" class="form-control" value={ task } onChange={handleOnChange}/>
+                                <div className="d-flex bd-highlight">
+                                    <div className="p-2 flex-grow-1 bd-highlight">
+                                        <input type="text" className="form-control" value={ task } onChange={handleOnChange}/>
                                     </div>
-                                    <div class="p-2 bd-highlight">
+                                    <div className="p-2 bd-highlight">
                                         <button type="button submit" className="btn btn-outline-primary">追加</button>
                                     </div>
                                 </div>
                             </form>
 
-                            <ul>
+                            <ul className="list-group">
                                 { todos.map((todo, index) => (
-                                    <li key={ index }>
-                                        {
-                                        todo
-                                        }
+                                    <li key={ index } className="list-group-item">
+                                         <input className="form-check-input me-1" type="checkbox" value="" aria-label="..."></input>
+                                        { todo }
+                                        <button type="button" className="btn btn-outline-dark btn-sm">×</button>
                                     </li>
                                 ))}
-                            </ul>
-                            <button type="button" className="btn btn-outline-danger">削除</button>
+                            </ul>            
                         </div>
 
                     </div>
                 </div>
             </div>
-
-
             
         </div>
     );
