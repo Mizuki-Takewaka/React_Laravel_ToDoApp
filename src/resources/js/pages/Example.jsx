@@ -65,7 +65,7 @@ function Example() {
                         <div className="card-header">
                             <p>タスク管理</p>
                             <p>{dateAndTime}</p>
-                            <a href="/"><button type="button" className="btn btn-primary">Homeに遷移ボタン</button></a>
+                            <a href="/"><button type="button" className="btn btn-primary btn-sm">Homeに遷移ボタン</button></a>
                         </div>
 
                         <div className="card-body">
