@@ -16,23 +16,32 @@ function Example() {
     //入力値をuseStateに格納
     const [task, setTask] = useState('');
 
+    //画面読み込み時、初期処理
+    useEffect(() => {
+        getTasksData();
+    },[])
 
     //バックエンドからtasksの一覧を取得する処理
-    axios
-        .get('http://localhost/api/tasks')
-        .then(response => {
-            setTodos(response.data.title);
-            console.log(response.data);
-            console.log(response.data[0]);
-        })
-        .catch(() => {
-            console.log('通信に失敗しました');
-        });
+    const getTasksData = () => {
+        axios
+            .get('http://localhost/api/tasks')
+            .then(response => {
+                console.log(response.data);
 
+                const taskData  = Object.values(response.data);
+                setTodos(taskData);
+            })
+            .catch(() => {
+                console.log('通信に失敗しました');
+        });
+    }
+
+    //フォームに入力時
     const handleOnChange = (event) => {
         setTask( event.target.value )
     }
     
+    //追加ボタン押下時
     const handleSubmit = (event) => {
         event.preventDefault()
         if(task === '') return
@@ -67,7 +76,7 @@ function Example() {
                                 { todos.map((todo, index) => (
                                     <li key={ index } className="list-group-item">
                                          <input className="form-check-input me-1" type="checkbox" value="" aria-label="..."></input>
-                                        { todo }
+                                        { todo.title }
                                         <button type="button" className="btn btn-outline-dark btn-sm">×</button>
                                     </li>
                                 ))}
