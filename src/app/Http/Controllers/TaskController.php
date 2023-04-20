@@ -9,21 +9,22 @@ class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * 一覧表示処理
      */
     public function index()
     {
         $tasks = Task::all();
-        return response()->json(
-            $tasks, 200
-        );
+        return response($tasks, 200);
     }
 
     /**
      * Store a newly created resource in storage.
+     * 追加処理
      */
     public function store(Request $request)
     {
-        //
+        $task = Task::create($request->all());
+        return response($task, 201);
     }
 
     /**

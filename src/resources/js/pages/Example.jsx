@@ -11,10 +11,10 @@ function Example() {
     const minute = now.getMinutes();
     const dateAndTime = `${year}/${month}/${date} ${hour}:${minute}`;
     
-    //todoリストをuseStateに格納
-    const [todos, setTodos] = useState([]);
+    //taskリストをuseStateに格納
+    const [tasks, setTasks] = useState([]);
     //入力値をuseStateに格納
-    const [task, setTask] = useState('');
+    const [inputTitle, setinputTitle] = useState('');
 
     //画面読み込み時、初期処理
     useEffect(() => {
@@ -29,7 +29,7 @@ function Example() {
                 console.log(response.data);
 
                 const taskData  = Object.values(response.data);
-                setTodos(taskData);
+                setTasks(taskData);
             })
             .catch(() => {
                 console.log('通信に失敗しました');
@@ -38,15 +38,23 @@ function Example() {
 
     //フォームに入力時
     const handleOnChange = (event) => {
-        setTask( event.target.value )
+        setinputTitle( event.target.value )
     }
     
     //追加ボタン押下時
     const handleSubmit = (event) => {
-        event.preventDefault()
-        if(task === '') return
-        setTodos(todos => [...todos, task])
-        setTask('')
+        event.preventDefault();
+        if(inputTitle === '') return;
+
+        axios
+        .post('http://localhost/api/tasks', {
+            title: inputTitle,
+        })
+        .then(
+            // console.log(response)
+        )
+        // setTasks(tasks => [...tasks, task?])
+        // setTask('')
     }
 
     return (
@@ -64,7 +72,7 @@ function Example() {
                             <form action="" onSubmit={handleSubmit}>
                                 <div className="d-flex bd-highlight">
                                     <div className="p-2 flex-grow-1 bd-highlight">
-                                        <input type="text" className="form-control" value={ task } onChange={handleOnChange}/>
+                                        <input type="text" className="form-control" value={ inputTitle } onChange={handleOnChange}/>
                                     </div>
                                     <div className="p-2 bd-highlight">
                                         <button type="button submit" className="btn btn-outline-primary">追加</button>
@@ -73,10 +81,10 @@ function Example() {
                             </form>
 
                             <ul className="list-group">
-                                { todos.map((todo, index) => (
+                                { tasks.map((task, index) => (
                                     <li key={ index } className="list-group-item">
                                          <input className="form-check-input me-1" type="checkbox" value="" aria-label="..."></input>
-                                        { todo.title }
+                                        { task.title }
                                         <button type="button" className="btn btn-outline-dark btn-sm">×</button>
                                     </li>
                                 ))}
