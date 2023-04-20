@@ -50,11 +50,11 @@ function Example() {
         .post('http://localhost/api/tasks', {
             title: inputTitle,
         })
-        .then(
-            // console.log(response)
-        )
-        // setTasks(tasks => [...tasks, task?])
-        // setTask('')
+        .then((response) => {
+            console.log(response);
+            setTasks(tasks => [...tasks, response.data])
+            setinputTitle('')
+        })
     }
 
     return (
