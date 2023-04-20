@@ -1,5 +1,6 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function Example() {
     const now = new Date();
@@ -9,11 +10,24 @@ function Example() {
     const hour = now.getHours();
     const minute = now.getMinutes();
     const dateAndTime = `${year}/${month}/${date} ${hour}:${minute}`;
-
+    
     //todoリストをuseStateに格納
     const [todos, setTodos] = useState([]);
     //入力値をuseStateに格納
     const [task, setTask] = useState('');
+
+
+    //バックエンドからtasksの一覧を取得する処理
+    axios
+        .get('http://localhost/api/tasks')
+        .then(response => {
+            setTodos(response.data.title);
+            console.log(response.data);
+            console.log(response.data[0]);
+        })
+        .catch(() => {
+            console.log('通信に失敗しました');
+        });
 
     const handleOnChange = (event) => {
         setTask( event.target.value )
