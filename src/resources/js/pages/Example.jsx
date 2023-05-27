@@ -57,6 +57,35 @@ function Example() {
         })
     }
 
+    //削除ボタン推下時
+    const deleteTask = (id) => {
+        console.log(`${id}を削除します`);
+        axios
+        .delete(`/api/tasks/${id}`)
+        .then((response) => {
+            console.log(response);
+            setTasks(tasks.filter((task) => task.id !== id));
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    };
+
+    // const deletePost = async (post) => {
+    //     await axios
+    //         .post('/api/delete', {
+    //         id: post.id
+    //     })
+    //     .then((res) => {
+    //         this.setState({
+    //             posts: res.posts
+    //         });
+    //     })
+    //     .catch(error => {
+    //         console.log(error);
+    //     });
+    // }
+
     return (
         <div className="container">
             <div className="row justify-content-center">
@@ -85,7 +114,7 @@ function Example() {
                                     <li key={ index } className="list-group-item">
                                          <input className="form-check-input me-1" type="checkbox" value="" aria-label="..."></input>
                                         { task.title }
-                                        <button type="button" className="btn btn-outline-dark btn-sm">×</button>
+                                        <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => deleteTask(task.id) }>×</button>
                                     </li>
                                 ))}
                             </ul>            
