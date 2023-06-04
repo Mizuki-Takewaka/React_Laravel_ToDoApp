@@ -17,14 +17,12 @@ function Example() {
     const [tasks, setTasks] = useState([]);
     //入力値をuseStateに格納
     const [inputTitle, setInputTitle] = useState('');
-    //modifyModeをuseStateに格納
-    const [modifyMode, setModifyMode] = useState(false);
     //編集時の入力値をrefで管理
-    //mapで繰り返す分だけ、useRef を生成
+    //mapで繰り返す分だけ、useRefを生成
     const modyfiedRefs = useRef([]);
     tasks.forEach((_, index) => {
         modyfiedRefs.current[index] = createRef()
-    })
+    });
 
     //画面読み込み時、初期処理
     useEffect(() => {
@@ -37,14 +35,17 @@ function Example() {
             .get('http://localhost/api/tasks')
             .then(response => {
                 console.log(response.data);
-
                 const taskData  = Object.values(response.data);
-                setTasks(taskData);
+                //taskDataのarrryにmodifyMode:falseを追加
+                const newTaskData = taskData.map((value,index)=> {
+                    value["modifyMode"] = false;
+                    return value;
+                });
+                setTasks(newTaskData);
             })
             .catch(() => {
                 console.log('通信に失敗しました');
         });
-        console.log(modifyMode);
     }
 
     //フォームに入力時
@@ -81,29 +82,32 @@ function Example() {
         .catch(error => {console.log(error)});
     };
 
-    //modifyModeのstateを反転させる関数
-    const classToggle = () => {
-        setModifyMode(!modifyMode);
+    //modifyModes[index]のstateを反転させる関数
+    const classToggle = (id) => {
+        const toddledTasks = tasks.map((value)=> {
+            value.id==id ? value.modifyMode=!value.modifyMode : value
+            return value;
+        });
+        setTasks(toddledTasks);
     }
-    
+
     //編集ボタン押下時（編集モードに変更）
-    const changeModifyMode = (index) => {
-        classToggle();
-        console.log(modifyMode);
+    const changeModifyMode = (id, index) => {
+        classToggle(id);
         modyfiedRefs.current[index].current.focus();
     }
 
     //編集キャンセルボタン押下時（通常モードに変更）
-    const cancelModifyMode = (title) => {
-        classToggle();
-        //編集途中値のrefをキャンセル(編集キャンセルし、再度編集モードにすると前回の編集内容が反映されないように)
-        // const modyfiedRefs.current.value = null ;
-        console.log(modifyMode);
+    const cancelModifyMode = (id, title, index) => {
+        classToggle(id);
+        console.log(modyfiedRefs);
+        //編集途中の値をリセット
+        modyfiedRefs.current[index].current.value = title;
     }
 
     //編集確定ボタン押下時
     const confirmModifyTask = (id, index) => {
-        const modifiedInputRef = modyfiedRefs.current[index].current.value; //編集入力値
+        const modifiedInputRef = modyfiedRefs.current[index].current.value; //編集入力値を代入
         console.log(`id:${id}を${modifiedInputRef}に編集します`);
         modyfiedRefs.current[index].current.focus();
 
@@ -114,13 +118,13 @@ function Example() {
         .then((response) => {
             console.log(response);
             //編集箇所を更新後の新arryで、state更新
-            const newTasksArry = tasks.map((task,index)=> {
+            const newTasksArry = tasks.map((task)=> {
                 task.id==id ? task.title=modifiedInputRef : task
                 return task;
             });
             setTasks( newTasksArry );
             //通常表示モードにクラスを変更
-            classToggle();
+            classToggle(id);
         })
         .catch(error => {console.log(error)});
     }
@@ -154,18 +158,18 @@ function Example() {
                                     <li key={ index } className="list-group-item">
 
                                         {/* 通常時の表示 (modifyMode:falseの時表示、trueの時display: none) */}
-                                        <div className={ modifyMode ? "d-none" : ""} >
+                                        <div className={ task.modifyMode ? "d-none" : ""} >
                                             <input className="form-check-input me-1" type="checkbox" value="" aria-label="..."></input>
                                             { task.title }
                                             <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => deleteTask(task.id) }>×</button>
-                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => changeModifyMode(index) }>編集</button>
+                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => changeModifyMode(task.id, index) }>編集</button>
                                         </div>
                                         
                                         {/* 編集時の表示 (modifyMode:trueの時表示、falseの時display: none)*/}
-                                        <div className={modifyMode ? "" : "d-none"}>
+                                        <div className={task.modifyMode ? "" : "d-none"}>
                                             <input type="text" defaultValue={task.title} ref={modyfiedRefs.current[index]}/> 
                                             <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => confirmModifyTask(task.id, index) }>編集確定</button>
-                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => cancelModifyMode() }>編集キャンセル</button>
+                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => cancelModifyMode(task.id, task.title, index) }>編集キャンセル</button>
                                         </div>
                                     </li>
                                 ))}
