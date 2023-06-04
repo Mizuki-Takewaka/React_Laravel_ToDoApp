@@ -1,6 +1,8 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRef, createRef } from 'react';
+
 
 function Example() {
     const now = new Date();
@@ -14,7 +16,15 @@ function Example() {
     //taskリストをuseStateに格納
     const [tasks, setTasks] = useState([]);
     //入力値をuseStateに格納
-    const [inputTitle, setinputTitle] = useState('');
+    const [inputTitle, setInputTitle] = useState('');
+    //modifyModeをuseStateに格納
+    const [modifyMode, setModifyMode] = useState(false);
+    //編集時の入力値をrefで管理
+    //mapで繰り返す分だけ、useRef を生成
+    const modyfiedRefs = useRef([]);
+    tasks.forEach((_, index) => {
+        modyfiedRefs.current[index] = createRef()
+    })
 
     //画面読み込み時、初期処理
     useEffect(() => {
@@ -34,11 +44,12 @@ function Example() {
             .catch(() => {
                 console.log('通信に失敗しました');
         });
+        console.log(modifyMode);
     }
 
     //フォームに入力時
     const handleOnChange = (event) => {
-        setinputTitle( event.target.value )
+        setInputTitle( event.target.value )
     }
     
     //追加ボタン押下時
@@ -55,9 +66,10 @@ function Example() {
             setTasks(tasks => [...tasks, response.data])
             setinputTitle('')
         })
+        .catch(error => {console.log(error)});
     }
 
-    //削除ボタン推下時
+    //削除ボタン押下時
     const deleteTask = (id) => {
         console.log(`${id}を削除します`);
         axios
@@ -66,25 +78,53 @@ function Example() {
             console.log(response);
             setTasks(tasks.filter((task) => task.id !== id));
         })
-        .catch(error => {
-            console.log(error);
-        });
+        .catch(error => {console.log(error)});
     };
 
-    // const deletePost = async (post) => {
-    //     await axios
-    //         .post('/api/delete', {
-    //         id: post.id
-    //     })
-    //     .then((res) => {
-    //         this.setState({
-    //             posts: res.posts
-    //         });
-    //     })
-    //     .catch(error => {
-    //         console.log(error);
-    //     });
-    // }
+    //modifyModeのstateを反転させる関数
+    const classToggle = () => {
+        setModifyMode(!modifyMode);
+    }
+    
+    //編集ボタン押下時（編集モードに変更）
+    const changeModifyMode = (index) => {
+        classToggle();
+        console.log(modifyMode);
+        modyfiedRefs.current[index].current.focus();
+    }
+
+    //編集キャンセルボタン押下時（通常モードに変更）
+    const cancelModifyMode = (title) => {
+        classToggle();
+        //編集途中値のrefをキャンセル(編集キャンセルし、再度編集モードにすると前回の編集内容が反映されないように)
+        // const modyfiedRefs.current.value = null ;
+        console.log(modifyMode);
+    }
+
+    //編集確定ボタン押下時
+    const confirmModifyTask = (id, index) => {
+        const modifiedInputRef = modyfiedRefs.current[index].current.value; //編集入力値
+        console.log(`id:${id}を${modifiedInputRef}に編集します`);
+        modyfiedRefs.current[index].current.focus();
+
+        axios
+        .patch(`/api/tasks/${id}`,{
+            title: modifiedInputRef,
+        })
+        .then((response) => {
+            console.log(response);
+            //編集箇所を更新後の新arryで、state更新
+            const newTasksArry = tasks.map((task,index)=> {
+                task.id==id ? task.title=modifiedInputRef : task
+                return task;
+            });
+            setTasks( newTasksArry );
+            //通常表示モードにクラスを変更
+            classToggle();
+        })
+        .catch(error => {console.log(error)});
+    }
+    
 
     return (
         <div className="container">
@@ -92,7 +132,7 @@ function Example() {
                 <div className="col-md-10">
                     <div className="card">
                         <div className="card-header">
-                            <p>タスク管理</p>
+                            <p className='pagetitle'>タスク管理</p>
                             <p>{dateAndTime}</p>
                             <a href="/"><button type="button" className="btn btn-primary btn-sm">Homeに遷移ボタン</button></a>
                         </div>
@@ -112,12 +152,24 @@ function Example() {
                             <ul className="list-group">
                                 { tasks.map((task, index) => (
                                     <li key={ index } className="list-group-item">
-                                         <input className="form-check-input me-1" type="checkbox" value="" aria-label="..."></input>
-                                        { task.title }
-                                        <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => deleteTask(task.id) }>×</button>
+
+                                        {/* 通常時の表示 (modifyMode:falseの時表示、trueの時display: none) */}
+                                        <div className={ modifyMode ? "d-none" : ""} >
+                                            <input className="form-check-input me-1" type="checkbox" value="" aria-label="..."></input>
+                                            { task.title }
+                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => deleteTask(task.id) }>×</button>
+                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => changeModifyMode(index) }>編集</button>
+                                        </div>
+                                        
+                                        {/* 編集時の表示 (modifyMode:trueの時表示、falseの時display: none)*/}
+                                        <div className={modifyMode ? "" : "d-none"}>
+                                            <input type="text" defaultValue={task.title} ref={modyfiedRefs.current[index]}/> 
+                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => confirmModifyTask(task.id, index) }>編集確定</button>
+                                            <button type="button" className="btn btn-outline-dark btn-sm" onClick={() => cancelModifyMode() }>編集キャンセル</button>
+                                        </div>
                                     </li>
                                 ))}
-                            </ul>            
+                            </ul>
                         </div>
 
                     </div>

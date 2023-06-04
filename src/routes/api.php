@@ -23,4 +23,5 @@ Route::controller(TaskController::class)->group(function () {
     Route::get('/tasks', 'index');
     Route::post('/tasks', 'store');
     Route::delete('/tasks/{id}', 'destroy');
+    Route::patch('/tasks/{id}', 'update');
 });
